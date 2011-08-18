@@ -4,7 +4,7 @@ require 'rake/gempackagetask'
 require 'time'
 require 'date'
 
-PROJECT_SPECS = FileList['spec/{innate,example}/**/*.rb'].exclude('common.rb')
+PROJECT_SPECS = FileList['spec/{innate,example}/**/*.rb'].exclude('spec/innate/cache/common.rb')
 PROJECT_MODULE = 'Innate'
 PROJECT_README = 'README.md'
 PROJECT_VERSION = (ENV['VERSION'] || Date.today.strftime('%Y.%m.%d')).dup
