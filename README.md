@@ -130,7 +130,7 @@ your shell:
     gem install innate
 
 ### Direct download
-  
+
 Download the latest tarball from [here](http://github.com/Ramaze/innate/tarball/master).
 
 ## Concepts
@@ -157,18 +157,10 @@ the list yet.
 ### View
 
 Innate supports multiple templating engines and it is very easy to add your
-own.
-At the moment we offer following engines out of the box:
+own. At the moment we offer following engines out of the box:
 
-* [Builder](http://builder.rubyforge.org)
-* [Haml](http://haml.hamptoncatlin.com/)
-* [Sass](http://haml.hamptoncatlin.com/docs/sass)
-* [Erubis](http://rubyforge.org/projects/erubis)
-* [Tenjin](http://www.kuwata-lab.com/tenjin/)
-
-How to build your own is discussed at
-[HowTo:View](http://ramaze.net/HowTo:View).
-
+* ERB
+* Etanni
 
 ### Controller
 
