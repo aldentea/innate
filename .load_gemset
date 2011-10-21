@@ -1,6 +1,5 @@
 #!/bin/bash -e
 
-env
-
+set -x
 source ~/.bashrc
 [[ -s .gems ]] && rvm gemset import .gems
