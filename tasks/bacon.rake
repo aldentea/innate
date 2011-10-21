@@ -1,7 +1,7 @@
 require 'fileutils'
 
 desc 'Run all bacon specs with pretty output'
-task :bacon do
+task :bacon => [:setup] do
   require 'open3'
   require 'scanf'
   require 'matrix'
