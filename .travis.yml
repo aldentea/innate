@@ -1,4 +1,4 @@
-script: 'rake bacon'
+script: 'RUBYOPT=-rubygems rake bacon'
 before_script:
   - "./.load_gemset"
 rvm:
