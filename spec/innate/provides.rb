@@ -62,8 +62,8 @@ describe 'Content representation' do
 
     it 'takes arguments with <name>/arg1/arg2.yaml' do
       assert_wish('/args', '[]', 'text/html')
-      assert_wish('/args.yaml', "--- []\n...", 'text/yaml')
-      assert_wish('/args/a/b/c.yaml', "---\n- a\n- b\n- c\n...", 'text/yaml')
+      assert_wish('/args.yaml', [].to_yaml, 'text/yaml')
+      assert_wish('/args/a/b/c.yaml', ['a', 'b', 'c'].to_yaml, 'text/yaml')
     end
   end
 
