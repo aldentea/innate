@@ -2,8 +2,6 @@ require 'fileutils'
 
 desc 'Run all bacon specs with pretty output'
 task :bacon do
-  sh 'rvm', 'gemset', 'import', '.gems'
-
   require 'open3'
   require 'scanf'
   require 'matrix'
