@@ -21,8 +21,3 @@ shared :rack_test do
 
   def app; Innate.middleware; end
 end
-
-shared :mock do
-  warn 'behaves_like(:mock) is deprecated, use behaves_like(:rack_test) instead'
-  behaves_like :rack_test
-end
