@@ -40,11 +40,6 @@ module Innate
         :sid_length, 64
       o "cookie cannot be accessed through client side script (http://www.owasp.org/index.php/HttpOnly)",
         :httponly, false
-
-      trigger(:expires){|value|
-        self.ttl = value - Time.now.to_i
-        Log.warn("Innate::Session.options.expires is deprecated, use #ttl instead")
-      }
     end
 
     attr_reader :cookie_set, :request, :response, :flash
@@ -98,7 +93,7 @@ module Innate
       @sid = generate_sid
       @force_new_cookie = true
     end
-    
+
     private
 
     def cache_sid
@@ -115,7 +110,7 @@ module Innate
 
     def set_cookie(response)
       return if @cookie_set || (!@force_new_cookie && cookie)
-      
+
       @cookie_set = true
       response.set_cookie(options.key, cookie_value)
       @force_new_cookie = false
