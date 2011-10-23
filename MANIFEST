@@ -1,4 +1,8 @@
+.gems
 .gitignore
+.load_gemset
+.rvmrc
+.travis.yml
 AUTHORS
 CHANGELOG
 COPYING
