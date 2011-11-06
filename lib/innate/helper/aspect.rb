@@ -5,7 +5,7 @@ module Innate
     #
     # This helper is essential for proper working of {Action#render}.
     module Aspect
-      AOP = Hash.new { |h,k| h[k] = Hash.new { |hh,kk| hh[kk] = nil } }
+      AOP = Hash.new{|h,k| h[k] = Hash.new{|hh,kk| hh[kk] = {} }}
 
       def self.included(into)
         into.extend(SingletonMethods)
@@ -23,17 +23,9 @@ module Innate
         return unless aop = Aspect.ancestral_aop(self.class)
         return unless block = at_position = aop[position]
 
-        if at_position.is_a?(Hash) and !at_position.is_a?(Proc)
-          block = at_position[name.to_sym]
-        elsif at_position.is_a?(Array)
-          block = at_position
-        end
+        block = at_position[name.to_sym] unless at_position.is_a?(Proc)
 
-        if block.respond_to?(:each)
-          block.each { |b| instance_eval(&b) }
-        elsif block
-          instance_eval(&block)
-        end
+        instance_eval(&block) if block
       end
 
       def aspect_wrap(action)
@@ -100,29 +92,19 @@ module Innate
         include Traited
 
         def before_all(&block)
-          AOP[self][:before_all] ||= []
-          AOP[self][:before_all]  << block
+          AOP[self][:before_all] = block
         end
 
         def before(*names, &block)
-          names.each do |name|
-            AOP[self][:before]       ||= {}
-            AOP[self][:before][name] ||= []
-            AOP[self][:before][name]  << block
-          end
+          names.each{|name| AOP[self][:before][name] = block }
         end
 
         def after_all(&block)
-          AOP[self][:after_all] ||= []
-          AOP[self][:after_all]  << block
+          AOP[self][:after_all] = block
         end
 
         def after(*names, &block)
-          names.each do |name|
-            AOP[self][:after]       ||= {}
-            AOP[self][:after][name] ||= []
-            AOP[self][:after][name]  << block
-          end
+          names.each{|name| AOP[self][:after][name] = block }
         end
 
         def wrap(*names, &block)

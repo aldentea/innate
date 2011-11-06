@@ -37,26 +37,6 @@ class AspectDerivedWithLayout < AspectAllSpec
   end
 end
 
-class AspectStacked
-  Innate.node('/stacked', self).provide(:html, :None)
-
-  before_all { $aspect_spec_before_all = 0 }
-  before_all { $aspect_spec_before_all += 20 }
-  before_all { $aspect_spec_before_all += 10 }
-
-  after_all  { $aspect_spec_before_all += 10 }
-  after_all  { $aspect_spec_before_all += 10 }
-
-  before(:before) { $aspect_spec_before_all += 10 }
-  before(:before) { $aspect_spec_before_all += 10 }
-
-  after(:before) { $aspect_spec_before_all += 10 }
-  after(:before) { $aspect_spec_before_all += 10 }
-
-  def index; $aspect_spec_before_all; end
-  def before; $aspect_spec_before_all; end
-end
-
 class AspecNoMethodSpec
   Innate.node('/without_method', self)
   include Innate::Node
@@ -110,18 +90,10 @@ describe Innate::Helper::Aspect do
 
     get('/derived/before_first').body.should == 'Content: 42'
     $aspect_spec_before_all.should == 42
-    $aspect_spec_after_all.should  == 40
+    $aspect_spec_after_all.should == 40
 
     get('/derived/before_second').body.should == 'Content: 84'
     $aspect_spec_before_all.should == 84
-    $aspect_spec_after_all.should  == 80
-  end
-
-  it 'calls should stack on top of each other' do
-    get('/stacked/').body.should       == '30'
-    $aspect_spec_before_all.should     == 50
-
-    get('/stacked/before').body.should == '50'
-    $aspect_spec_before_all.should     == 90
+    $aspect_spec_after_all.should == 80
   end
 end
