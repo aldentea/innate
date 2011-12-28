@@ -102,11 +102,10 @@ module Innate
     # @param [Cache] cache
     def self.register(cache)
       key = cache.name.to_s
-      source = "def self.#{key}() @#{key}; end
-                def self.#{key}=(o) @#{key} = o; end"
-      self.class_eval(source, __FILE__, __LINE__)
+      return if respond_to?(key) && respond_to?("#{key}=")
+      (class << self; self; end).send(:attr_accessor, key)
 
-      self.send("#{key}=", cache)
+      send("#{key}=", cache)
     end
 
     def self.add(*names)
