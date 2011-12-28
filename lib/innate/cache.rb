@@ -101,9 +101,9 @@ module Innate
     #
     # @param [Cache] cache
     def self.register(cache)
-      key = cache.name
-      source = "def self.%s() @%s; end
-                def self.%s=(o) @%s = o; end" % [key, key, key, key]
+      key = cache.name.to_s
+      source = "def self.#{key}() @#{key}; end
+                def self.#{key}=(o) @#{key} = o; end"
       self.class_eval(source, __FILE__, __LINE__)
 
       self.send("#{key}=", cache)
