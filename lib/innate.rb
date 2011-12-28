@@ -53,6 +53,7 @@ module Innate
   require 'innate/session'
   require 'innate/session/flash'
   require 'innate/route'
+  require 'innate/rack_file_wrapper'
 
   extend Trinity
 

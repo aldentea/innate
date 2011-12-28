@@ -41,7 +41,7 @@ module Innate
 
       joined = roots.map{|root| publics.map{|public| ::File.join(root, public)}}
 
-      apps = joined.flatten.map{|public_root| Rack::File.new(public_root) }
+      apps = joined.flatten.map{|public_root| RackFileWrapper.new(public_root) }
       apps << Current.new(Route.new(app), Rewrite.new(app))
 
       cascade(*apps)

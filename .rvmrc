@@ -1,3 +1,2 @@
-rvm_gemset_create_on_use_flag=1
-rvm use --create 1.9.3@innate
+rvm --install --create use 1.9.3@innate
 [[ -s .gems ]] && rvm gemset import .gems
