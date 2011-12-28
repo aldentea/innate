@@ -1,3 +1,62 @@
+[13f9372 | 2011-12-28 04:54:29 UTC] Michael Fellinger <m.fellinger@gmail.com>
+
+  * less obfuscation ftw
+
+[10cf300 | 2011-12-28 04:54:09 UTC] Michael Fellinger <m.fellinger@gmail.com>
+
+  * minor cleanup around specs
+
+[7f61483 | 2011-12-28 04:53:40 UTC] Michael Fellinger <m.fellinger@gmail.com>
+
+  * Update to Rack 1.4.0
+
+[575e900 | 2011-12-08 17:05:04 UTC] Michael Fellinger <m.fellinger@gmail.com>
+
+  * Update travis config
+
+[037f35a | 2011-11-06 12:18:30 UTC] Yorick Peterse <yorickpeterse@gmail.com>
+
+  * Revert "AOP calls can now be stacked."
+
+    This reverts commit 3ceb18dae7b774ab9b21cba6538b217ba35d5e21.
+    
+    Signed-off-by: Yorick Peterse <yorickpeterse@gmail.com>
+
+[3ceb18d | 2011-11-06 11:30:51 UTC] Yorick Peterse <yorickpeterse@gmail.com>
+
+  * AOP calls can now be stacked.
+
+    This means that calling methods such as before_all() or before() multiple times
+    in the same controller will no longer in these calls overwriting previously
+    defined ones. A short example of this is the following:
+    
+        class Posts
+          Innate.node('/posts')
+          helper :aspect
+    
+          NUMBERS = []
+    
+          before_all do
+            NUMBERS << 10
+          end
+    
+          before_all do
+            NUMBERS << 20
+          end
+    
+          def index
+            return NUMBERS
+          end
+        end
+    
+    Visiting /posts would result in "[10, 20]" being displayed in the browser.
+    
+    Signed-off-by: Yorick Peterse <yorickpeterse@gmail.com>
+
+[7ad5d81 | 2011-10-23 17:19:58 UTC] Michael Fellinger <m.fellinger@gmail.com>
+
+  * Version 2011.10
+
 [013b148 | 2011-10-22 20:12:45 UTC] Michael Fellinger <m.fellinger@gmail.com>
 
   * Remove deprecated Innate::Session.options.expires, use Innate::Session.options.ttl instead

@@ -54,6 +54,7 @@ lib/innate/node.rb
 lib/innate/options.rb
 lib/innate/options/dsl.rb
 lib/innate/options/stub.rb
+lib/innate/rack_file_wrapper.rb
 lib/innate/request.rb
 lib/innate/response.rb
 lib/innate/route.rb
