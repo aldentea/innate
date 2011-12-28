@@ -1,5 +1,3 @@
-begin; require 'rubygems'; rescue LoadError; end
-
 require 'bacon'
 require 'rack/test'
 require File.expand_path('../../', __FILE__) unless defined?(Innate)

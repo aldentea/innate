@@ -1,4 +1,3 @@
-require 'rake'
 require 'rake/clean'
 require 'rubygems/package_task'
 require 'time'
