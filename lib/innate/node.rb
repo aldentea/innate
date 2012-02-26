@@ -356,16 +356,18 @@ module Innate
     # html.
     #
     # @param [String] path
+    # @param [Hash] options
     #
     # @return [nil, Action]
     #
     # @api external
     # @see Node::find_provide Node::update_method_arities Node::find_action
     # @author manveru
-    def resolve(path)
+    def resolve(path, options = {})
       name, wish, engine = find_provide(path)
       node = (respond_to?(:ancestors) && respond_to?(:new)) ? self : self.class
-      action = Action.create(:node => node, :wish => wish, :engine => engine, :path => path)
+      action = Action.create(:node => node, :wish => wish, :engine => engine, :path => path, :options => options)
+      action.options.key?(:needs_method) || action.options[:needs_method] = node.needs_method?
 
       if content_type = node.ancestral_trait["#{wish}_content_type"]
         action.options = {:content_type => content_type}
@@ -414,7 +416,7 @@ module Innate
     #      Action#wish Action#merge!
     # @author manveru
     def fill_action(action, given_name)
-      needs_method = self.needs_method?
+      needs_method = action.options[:needs_method]
       wish = action.wish
 
       patterns_for(given_name) do |name, params|

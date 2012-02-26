@@ -96,6 +96,21 @@ class SpecHelperRenderFile
   end
 end
 
+class SpecHelperRenderNeedsMethodView
+  Innate.node '/render_needs_method_view'
+  map_views '/'
+  layout :layout
+  trait :needs_method => true
+
+  def layout
+    '{ #{@content} }'
+  end
+
+  def without_method_or_layout
+    render_view(:num, :n => 42)
+  end
+end
+
 describe Innate::Helper::Render do
   describe '#render_full' do
     behaves_like :rack_test
@@ -138,6 +153,10 @@ describe Innate::Helper::Render do
 
     it 'renders action without calling the method or applying layout' do
       get('/render_view/without_method_or_layout').body.should == '{ 42 }'
+    end
+
+    it 'renders action even when needs_method is true' do
+      get('/render_needs_method_view/without_method_or_layout').body.should == '{ 42 }'
     end
   end
 
