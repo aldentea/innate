@@ -52,7 +52,7 @@ module Innate
       # This method is mostly here in case you include this helper elsewhere
       # and don't want (or can't) type SomeNode.r all the time.
       #
-      # The usage is identical with {route}.
+      # The usage is identical with {Innate::Helper::Link#route}.
       #
       # @param [#to_s] name
       # @return [URI] to the location

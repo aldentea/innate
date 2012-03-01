@@ -13,7 +13,7 @@ module Innate
   # scheme.
   #
   # This makes dispatching more fun, avoids a lot of processing that is done by
-  # {Rack} anyway and lets you tailor your application down to the last action
+  # Rack anyway and lets you tailor your application down to the last action
   # exactly the way you want without worrying about side-effects to other
   # {Node}s.
   #
@@ -269,7 +269,7 @@ module Innate
     end
 
     # Let's try to find some valid action for given +path+.
-    # Otherwise we dispatch to {action_missing}.
+    # Otherwise we dispatch to {Innate::Node#action_missing}.
     #
     # @param [String] path from env['PATH_INFO']
     #
@@ -376,7 +376,8 @@ module Innate
       node.fill_action(action, name)
     end
 
-    # Resolve possible provides for the given +path+ from {provides}.
+    # Resolve possible provides for the given +path+ from
+    # {Innate::Node#provides}.
     #
     # @param [String] path
     #
@@ -558,8 +559,8 @@ module Innate
 
     # Try to find the best template for the given basename and wish.
     #
-    # This method is mostly here for symetry with {to_layout} and to allow you
-    # overriding the template lookup easily.
+    # This method is mostly here for symetry with {Innate::Node#to_layout} and
+    # to allow you overriding the template lookup easily.
     #
     # @param [#to_s] action_name
     # @param [#to_s] wish
@@ -650,7 +651,7 @@ module Innate
     # Define a layout to use on this Node.
     #
     # A Node can only have one layout, although the template being chosen can
-    # depend on {provides}.
+    # depend on {Innate::Node#provides}.
     #
     # @example
     #   layout :foo
@@ -991,7 +992,8 @@ module Innate
       ancestral_trait[:needs_method]
     end
 
-    # This will return true if the only provides set are by {Node::included}.
+    # This will return true if the only provides set are by
+    # {Innate::Node.included}.
     #
     # The reasoning behind this is to determine whether the user has touched
     # the provides at all, in which case we will not override the provides in
