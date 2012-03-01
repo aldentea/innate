@@ -32,7 +32,7 @@ module Innate
     end
 
     def cascade(*apps)
-      @app = Rack::Cascade.new(apps)
+      @app = Rack::Cascade.new(apps, [404, 405])
     end
 
     # Default application for Innate

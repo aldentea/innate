@@ -134,7 +134,7 @@ module Innate
       # @api internal
       # @author manveru
       def render_custom(action_name, variables = {})
-        unless action = resolve(action_name.to_s)
+        unless action = resolve(action_name.to_s, :needs_method => false)
           raise(ArgumentError, "No Action %p on #{self}" % [action_name])
         end
 
