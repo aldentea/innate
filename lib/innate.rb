@@ -33,7 +33,6 @@ module Innate
   require 'innate/version'
   require 'innate/traited'
   require 'innate/trinity'
-  require 'innate/middleware_compiler'
   require 'innate/options/dsl'
   require 'innate/options/stub'
   require 'innate/dynamap'
@@ -53,7 +52,6 @@ module Innate
   require 'innate/session'
   require 'innate/session/flash'
   require 'innate/route'
-  require 'innate/rack_file_wrapper'
 
   extend Trinity
 
@@ -118,7 +116,7 @@ module Innate
       innate_options.merge!(options)
 
       setup_dependencies
-      middleware!(innate_options.mode, &block) if block_given?
+      middleware_recompile
 
       return if innate_options.started
       innate_options.started = true
@@ -130,7 +128,7 @@ module Innate
     end
 
     def start!(mode = options[:mode])
-      Adapter.start(middleware(mode))
+      Adapter.start(@middleware)
     end
 
     def stop(wait = 3)
@@ -157,20 +155,45 @@ module Innate
     # @default mode options.mode
     # @return [Array] with [body, header, status]
     # @author manveru
-    def call(env, mode = options[:mode])
-      middleware(mode).call(env)
+    def call(env)
+      @middleware.call(env)
     end
 
-    def middleware(mode = options[:mode], &block)
-      options[:middleware_compiler].build(mode, &block)
+    def middleware_dev
+      Rack::Builder.new do
+        [ Rack::Lint, Rack::Head, Rack::ContentLength, Rack::CommonLogger,
+          Rack::ShowExceptions, Rack::ShowStatus, Rack::ConditionalGet,
+          [Rack::Reloader, 2],
+        ].each{|m| use(*m) }
+        run Innate.middleware_core
+      end
     end
 
-    def middleware!(mode = options[:mode], &block)
-      options[:middleware_compiler].build!(mode, &block)
+    def middleware_live
+      Rack::Builder.new do
+        [ Rack::Head, Rack::ContentLength, Rack::CommonLogger,
+          Rack::ShowStatus, Rack::ConditionalGet,
+        ].each{|*m| use(*m) }
+        run Innate.middleware_core
+      end
     end
 
-    def middleware_recompile(mode = options[:mode])
-      options[:middleware_compiler]::COMPILED[mode].compile!
+    def middleware_core
+      roots, publics = options[:roots], options[:publics]
+      joined = roots.map{|root| publics.map{|public| ::File.join(root, public)}}
+
+      Rack::Cascade.new(
+        joined.flatten.map{|public_root| Rack::File.new(public_root) } <<
+        Current.new(Route.new(DynaMap), Rewrite.new(DynaMap)), [404, 405])
+    end
+
+    def middleware_recompile(mode = ENV['RACK_ENV'])
+      case mode.to_s.downcase
+      when 'spec', 'test', 'production', 'live'
+        @middleware = self.middleware_live
+      else
+        @middleware = self.middleware_dev
+      end
     end
 
     # @example Innate can be started by:
@@ -199,72 +222,4 @@ module Innate
   end
 
   extend SingletonMethods
-
-  # This sets up the default modes.
-  # The Proc to use is determined by the value of options.mode.
-  # The Proc value is passed to setup_middleware if no block is given to
-  # Innate::start.
-  #
-  # A quick overview over the middleware used here:
-  #
-  #   * Rack::CommonLogger
-  #     Logs a line in Apache common log format or <tt>rack.errors</tt>.
-  #
-  #   * Rack::ShowExceptions
-  #     Catches all exceptions raised from the app it wraps. It shows a useful
-  #     backtrace with the sourcefile and clickable context, the whole Rack
-  #     environment and the request data.
-  #     Be careful when you use this on public-facing sites as it could reveal
-  #     information helpful to attackers.
-  #
-  #   * Rack::ShowStatus
-  #     Catches all empty responses the app it wraps and replaces them with a
-  #     site explaining the error.
-  #     Additional details can be put into <tt>rack.showstatus.detail</tt> and
-  #     will be shown as HTML. If such details exist, the error page is always
-  #     rendered, even if the reply was not empty.
-  #
-  #   * Rack::ConditionalGet
-  #     Middleware that enables conditional GET using If-None-Match and
-  #     If-Modified-Since. The application should set either or both of the
-  #     Last-Modified or Etag response headers according to RFC 2616. When
-  #     either of the conditions is met, the response body is set to be zero
-  #     length and the response status is set to 304 Not Modified.
-  #
-  #   * Rack::Head
-  #     Removes the body of the response for HEAD requests.
-  #
-  #   * Rack::Reloader
-  #     Pure ruby source reloader, runs on every request with a configurable
-  #     cooldown period.
-  #
-  #   * Rack::Lint
-  #     Rack::Lint validates your application and the requests and responses
-  #     according to the Rack spec.
-  #
-  # Note that `m.innate` takes away most of the boring part and leaves it up to
-  # you to select your middleware in your application.
-  #
-  # `m.innate` expands to:
-  #
-  #   use Rack::Cascade.new([
-  #     Rack::File.new('public'),
-  #     Innate::Current.new(
-  #       Rack::Cascade.new([
-  #         Innate::Rewrite.new(Innate::DynaMap),
-  #         Innate::Route.new(Innate::DynaMap)]))])
-  #
-  # @see Rack::MiddlewareCompiler
-  middleware :dev do |m|
-    m.apps(Rack::Lint, Rack::Head, Rack::ContentLength, Rack::CommonLogger,
-           Rack::ShowExceptions, Rack::ShowStatus, Rack::ConditionalGet)
-    m.use(Rack::Reloader, 2)
-    m.innate
-  end
-
-  middleware :live do |m|
-    m.apps(Rack::Head, Rack::ContentLength, Rack::CommonLogger,
-           Rack::ShowStatus, Rack::ConditionalGet)
-    m.innate
-  end
 end

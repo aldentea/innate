@@ -11,9 +11,6 @@ module Innate
     o "Trap this signal to issue shutdown, nil/false to disable trap",
       :trap, 'SIGINT'
 
-    o "The compiler for middleware",
-      :middleware_compiler, Innate::MiddlewareCompiler
-
     o "Indicates which default middleware to use, (:dev|:live)",
       :mode, :dev
 
