@@ -38,6 +38,7 @@ module Innate
   require 'innate/dynamap'
 
   # innate full
+  require 'innate/lru_hash'
   require 'innate/cache'
   require 'innate/node'
   require 'innate/options'

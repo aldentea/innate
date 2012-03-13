@@ -6,8 +6,7 @@ module Innate
           filename = action.view || action.method
           Innate::Etanni.new(str, filename)
         end
-        html = etanni.result(action.instance)
-        return html, Response.mime_type
+        etanni.result(action.instance)
       end
     end
   end

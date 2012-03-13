@@ -50,6 +50,7 @@ module Innate
     trait :fast_mappings  => false
 
     # @see wrap_action_call
+    trait :action_cache   => LRUHash.new
     trait :wrap           => SortedSet.new
     trait :provide_set    => false
     trait :needs_method   => false
@@ -279,7 +280,7 @@ module Innate
     # @see Node#resolve Node#action_found Node#action_missing
     # @author manveru
     def try_resolve(path)
-      action = resolve(path)
+      action = ancestral_trait[:action_cache][[self, path]] ||= resolve(path)
       action ? action_found(action) : action_missing(path)
     end
 
@@ -370,7 +371,7 @@ module Innate
       action.options.key?(:needs_method) || action.options[:needs_method] = node.needs_method?
 
       if content_type = node.ancestral_trait["#{wish}_content_type"]
-        action.options = {:content_type => content_type}
+        action.options[:content_type] = content_type
       end
 
       node.update_method_arities
@@ -805,7 +806,7 @@ module Innate
 
     def update_view_mappings
       if ancestral_trait[:fast_mappings]
-        return @view_templates if instance_variable_defined?(:@view_templates)
+        return @view_templates if @view_templates
       end
 
       paths = possible_paths_for(view_mappings)
@@ -814,7 +815,7 @@ module Innate
 
     def update_layout_mappings
       if ancestral_trait[:fast_mappings]
-        return @layout_templates if instance_variable_defined?(:@layout_templates)
+        return @layout_templates if @layout_templates
       end
 
       paths = possible_paths_for(layout_mappings)

@@ -82,12 +82,11 @@ module Innate
 
       instance.wrap_action_call(self) do
         copy_variables
-        self.method_value = instance.__send__(method, *params) if method
-        self.view_value = View.read(view) if view
+        self.method_value = method ? instance.__send__(method, *params) : nil
+        self.view_value = view ? View.read(view) : nil
 
-        body, content_type = wrap_in_layout{
-          engine.call(self, view_value || method_value || '') }
-        options[:content_type] ||= content_type if content_type
+        body, content_type = wrap_in_layout{ engine.call(self, view_value || method_value || '') }
+        options[:content_type] ||= content_type
         body
       end
     end
