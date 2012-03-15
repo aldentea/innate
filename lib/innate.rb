@@ -76,11 +76,6 @@ module Innate
     #   # passing options
     #   Innate.start :adapter => :mongrel, :mode => :live
     #
-    #   # defining custom middleware
-    #   Innate.start do |m|
-    #     m.innate
-    #   end
-    #
     # @return [nil] if options.started is true
     # @yield [MiddlewareCompiler]
     # @param [Proc] block will be passed to {middleware!}
@@ -101,7 +96,7 @@ module Innate
     #   Trap this signal to issue shutdown, nil/false to disable trap
     # @option param :mode    [Symbol]  (:dev)
     #   Indicates which default middleware to use, (:dev|:live)
-    def start(options = {}, &block)
+    def start(options = {})
       root, file = options.delete(:root), options.delete(:file)
       innate_options = Innate.options
 
