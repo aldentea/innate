@@ -22,7 +22,6 @@ module Innate
   require 'pathname'
   require 'pp'
   require 'set'
-  require 'socket'
   require 'thread'
   require 'uri'
 
