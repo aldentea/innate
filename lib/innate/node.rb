@@ -210,6 +210,11 @@ module Innate
     # @see View::get Node#provides
     # @author manveru
     #
+    # @note
+    #  If you specify a block when calling this method you'll have to take care
+    #  of rendering views and the like yourself. If you merely want to set a
+    #  extension and content type you can omit the block.
+    #
     # @todo
     #   The comment of this method may be too short for the effects it has on
     #   the rest of Innate, if you feel something is missing please let me
