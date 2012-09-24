@@ -111,7 +111,6 @@ module Innate
       innate_options.merge!(options)
 
       setup_dependencies
-      middleware_recompile
 
       return if innate_options.started
       innate_options.started = true
@@ -142,6 +141,10 @@ module Innate
       options[:setup].each{|obj| obj.teardown if obj.respond_to?(:teardown) }
     end
 
+    def setup
+      options.mode ||= (ENV['RACK_ENV'] || :dev)
+    end
+
     # Treat Innate like a rack application, pass the rack +env+ and optionally
     # the +mode+ the application runs in.
     #
@@ -151,7 +154,24 @@ module Innate
     # @return [Array] with [body, header, status]
     # @author manveru
     def call(env)
-      @middleware.call(env)
+      app.call(env)
+    end
+
+    attr_accessor :app
+
+    def recompile_middleware(mode = ENV['RACK_ENV'])
+      p recompile_middleware: mode
+      p caller.first(5)
+      self.app = send("middleware_#{mode}")
+    end
+
+    def middleware_core
+      roots, publics = options[:roots], options[:publics]
+      joined = roots.map{|root| publics.map{|public| ::File.join(root, public)}}
+
+      Rack::Cascade.new(
+        joined.flatten.map{|public_root| Rack::File.new(public_root) } <<
+        Current.new(Route.new(DynaMap), Rewrite.new(DynaMap)), [404, 405])
     end
 
     def middleware_dev
@@ -170,24 +190,6 @@ module Innate
           Rack::ShowStatus, Rack::ConditionalGet,
         ].each{|*m| use(*m) }
         run Innate.middleware_core
-      end
-    end
-
-    def middleware_core
-      roots, publics = options[:roots], options[:publics]
-      joined = roots.map{|root| publics.map{|public| ::File.join(root, public)}}
-
-      Rack::Cascade.new(
-        joined.flatten.map{|public_root| Rack::File.new(public_root) } <<
-        Current.new(Route.new(DynaMap), Rewrite.new(DynaMap)), [404, 405])
-    end
-
-    def middleware_recompile(mode = ENV['RACK_ENV'])
-      case mode.to_s.downcase
-      when 'spec', 'test', 'production', 'live'
-        @middleware = self.middleware_live
-      else
-        @middleware = self.middleware_dev
       end
     end
 
