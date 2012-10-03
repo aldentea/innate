@@ -122,7 +122,9 @@ module Innate
     end
 
     def start!(mode = options[:mode])
-      Adapter.start(@middleware)
+      recompile_middleware unless app
+
+      Adapter.start(app)
     end
 
     def stop(wait = 3)
@@ -159,7 +161,7 @@ module Innate
 
     attr_accessor :app
 
-    def recompile_middleware(mode = ENV['RACK_ENV'])
+    def recompile_middleware(mode = options[:mode])
       self.app = send("middleware_#{mode}")
     end
 
