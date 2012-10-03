@@ -29,6 +29,6 @@ module Innate
     o "Prefix used to create relative links",
       :prefix, '/'
 
-    trigger(:mode){|value| p innate: Innate.recompile_middleware(value) }
+    trigger(:mode){|value| Innate.recompile_middleware(value) }
   end
 end

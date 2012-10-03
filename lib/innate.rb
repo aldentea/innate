@@ -160,8 +160,6 @@ module Innate
     attr_accessor :app
 
     def recompile_middleware(mode = ENV['RACK_ENV'])
-      p recompile_middleware: mode
-      p caller.first(5)
       self.app = send("middleware_#{mode}")
     end
 
