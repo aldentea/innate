@@ -162,7 +162,7 @@ module Innate
     attr_accessor :app
 
     def recompile_middleware(mode = options[:mode])
-      self.app = send("middleware_#{mode}")
+      Innate.app = send("middleware_#{mode}")
     end
 
     def middleware_core
