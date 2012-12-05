@@ -6,15 +6,10 @@ Bacon.summary_on_exit
 
 ENV['RACK_ENV'] = 'TEST'
 
-module Innate
-  def self.middleware_spec
-    Rack::Builder.new { run Innate.middleware_core }
-  end
+Innate.middleware(:spec) { run Innate.core }
 
-  # skip starting adapter
-  options.started = true
-  options.mode = :spec
-end
+Innate.options.started = true
+Innate.options.mode    = :spec
 
 shared :rack_test do
   Innate.setup_dependencies
