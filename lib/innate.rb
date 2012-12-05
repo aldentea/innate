@@ -55,18 +55,18 @@ module Innate
 
   extend Trinity
 
+  ##
+  # Hash that will contain the middleware for each defined mode.
+  #
+  # @return [Hash]
+  #
+  MIDDLEWARE = {}
+
   # Contains all the module functions for Innate, we keep them in a module so
   # Ramaze can simply use them as well.
   module SingletonMethods
     PROXY_OPTIONS = { :port => 'adapter.port', :host => 'adapter.host',
                       :adapter => 'adapter.handler' }
-
-    ##
-    # Hash that will contain the middleware for each defined mode.
-    #
-    # @return [Hash]
-    #
-    MIDDLEWARE = {}
 
     ##
     # Returns an instance of `Rack::Builder` that can be used to start a Innate
@@ -151,7 +151,7 @@ module Innate
     end
 
     def start!(mode = options[:mode])
-      Adapter.start(app)
+      Adapter.start(Innate.app)
     end
 
     def stop(wait = 3)
@@ -183,7 +183,7 @@ module Innate
     # @return [Array] with [body, header, status]
     # @author manveru
     def call(env)
-      app.call(env)
+      Innate.app.call(env)
     end
 
     ##
