@@ -409,8 +409,6 @@ module Innate
     # of the client.
     #
     # @param [String] given_name the name extracted from REQUEST_PATH
-    # @param [String] wish
-    #
     # @return [Action, nil]
     #
     # @api internal
@@ -667,7 +665,8 @@ module Innate
     #     wish == 'html'
     #   end
     #
-    # @param [String, #to_s] name basename without extension of the layout to use
+    # @param [String, #to_s] layout_name basename without extension of the
+    #  layout to use
     # @param [Proc, #call] block called on every dispatch if no name given
     #
     # @return [Proc, String] The assigned name or block
@@ -855,7 +854,7 @@ module Innate
     # Answer with an array of possible paths in order of significance for
     # template lookup of the given +mappings+.
     #
-    # @param [#map] An array two Arrays of inner and outer directories.
+    # @param [#map] mappings An array two Arrays of inner and outer directories.
     #
     # @return [Array]
     # @see update_view_mappings update_layout_mappings update_template_mappings
