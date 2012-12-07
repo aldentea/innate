@@ -55,11 +55,27 @@ module Innate
 
   extend Trinity
 
+  ##
+  # Hash that will contain the middleware for each defined mode.
+  #
+  # @return [Hash]
+  #
+  MIDDLEWARE = {}
+
   # Contains all the module functions for Innate, we keep them in a module so
   # Ramaze can simply use them as well.
   module SingletonMethods
     PROXY_OPTIONS = { :port => 'adapter.port', :host => 'adapter.host',
                       :adapter => 'adapter.handler' }
+
+    ##
+    # Returns an instance of `Rack::Builder` that can be used to start a Innate
+    # application.
+    #
+    # @return [Rack::Builder]
+    #
+    attr_accessor :app
+
     # The method that starts the whole business.
     #
     # Call Innate.start after you defined your application.
@@ -77,8 +93,6 @@ module Innate
     #   Innate.start :adapter => :mongrel, :mode => :live
     #
     # @return [nil] if options.started is true
-    # @yield [MiddlewareCompiler]
-    # @param [Proc] block will be passed to {middleware!}
     #
     # @option param :host    [String]  ('0.0.0.0')
     #   IP address or hostname that we respond to - 0.0.0.0 for all
@@ -111,19 +125,33 @@ module Innate
       innate_options.merge!(options)
 
       setup_dependencies
-      middleware_recompile
 
       return if innate_options.started
+
       innate_options.started = true
 
       signal = innate_options.trap
+
       trap(signal){ stop(10) } if signal
+
+      mode = self.options[:mode].to_sym
+
+      # While Rack itself will spit out errors for invalid instances of
+      # Rack::Builder these errors are typically not very user friendly.
+      if !Innate.app or !MIDDLEWARE[mode]
+        raise(
+          ArgumentError,
+          "The mode \"#{mode}\" does not have a set of middleware defined. " \
+            "You can define these middleware using " \
+            "#{self}.middleware(:#{mode}) { ... }"
+        )
+      end
 
       start!
     end
 
     def start!(mode = options[:mode])
-      Adapter.start(@middleware)
+      Adapter.start(Innate.app)
     end
 
     def stop(wait = 3)
@@ -142,6 +170,10 @@ module Innate
       options[:setup].each{|obj| obj.teardown if obj.respond_to?(:teardown) }
     end
 
+    def setup
+      options.mode ||= (ENV['RACK_ENV'] || :dev)
+    end
+
     # Treat Innate like a rack application, pass the rack +env+ and optionally
     # the +mode+ the application runs in.
     #
@@ -151,44 +183,62 @@ module Innate
     # @return [Array] with [body, header, status]
     # @author manveru
     def call(env)
-      @middleware.call(env)
+      Innate.app.call(env)
     end
 
-    def middleware_dev
-      Rack::Builder.new do
-        [ Rack::Lint, Rack::Head, Rack::ContentLength, Rack::CommonLogger,
-          Rack::ShowExceptions, Rack::ShowStatus, Rack::ConditionalGet,
-          [Rack::Reloader, 2],
-        ].each{|m| use(*m) }
-        run Innate.middleware_core
+    ##
+    # Updates `Innate.app` based on the current mode.
+    #
+    # @param [#to_sym] mode The mode to use.
+    #
+    def recompile_middleware(mode = options[:mode])
+      mode = mode.to_sym
+
+      if MIDDLEWARE[mode]
+        Innate.app = Rack::Builder.new(&MIDDLEWARE[mode])
       end
     end
 
-    def middleware_live
-      Rack::Builder.new do
-        [ Rack::Head, Rack::ContentLength, Rack::CommonLogger,
-          Rack::ShowStatus, Rack::ConditionalGet,
-        ].each{|*m| use(*m) }
-        run Innate.middleware_core
-      end
-    end
-
-    def middleware_core
+    ##
+    # Returns an instance of `Rack::Cascade` for running Innate applications.
+    # This method should be called using `Rack::Builder#run`:
+    #
+    #     Innate.middleware(:dev) do
+    #       run Innate.core
+    #     end
+    #
+    # @return [Rack::Cascade]
+    #
+    def core
       roots, publics = options[:roots], options[:publics]
-      joined = roots.map{|root| publics.map{|public| ::File.join(root, public)}}
 
-      Rack::Cascade.new(
-        joined.flatten.map{|public_root| Rack::File.new(public_root) } <<
-        Current.new(Route.new(DynaMap), Rewrite.new(DynaMap)), [404, 405])
+      joined  = roots.map { |root| publics.map { |p| File.join(root, p) } }
+      joined  = joined.flatten.map { |p| Rack::File.new(p) }
+      current = Current.new(Route.new(DynaMap), Rewrite.new(DynaMap))
+
+      return Rack::Cascade.new(joined << current, [404, 405])
     end
 
-    def middleware_recompile(mode = ENV['RACK_ENV'])
-      case mode.to_s.downcase
-      when 'spec', 'test', 'production', 'live'
-        @middleware = self.middleware_live
-      else
-        @middleware = self.middleware_dev
-      end
+    ##
+    # Sets the middleware for the given mode.
+    #
+    # @example
+    #  Innate.middleware(:dev) do
+    #    use Rack::Head
+    #    use Rack::Reloader
+    #
+    #    run Innate.core
+    #  end
+    #
+    # @param [#to_sym] mode The mode that the middleware belong to.
+    # @param [Proc] block Block containing the middleware. This block will be
+    #  passed to an instance of `Rack::Builder` and can thus contain everything
+    #  this class allows you to use.
+    #
+    def middleware(mode, &block)
+      MIDDLEWARE[mode.to_sym] = block
+
+      recompile_middleware
     end
 
     # @example Innate can be started by:
@@ -217,4 +267,6 @@ module Innate
   end
 
   extend SingletonMethods
+
+  require 'innate/default_middleware'
 end

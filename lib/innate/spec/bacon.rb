@@ -6,11 +6,10 @@ Bacon.summary_on_exit
 
 ENV['RACK_ENV'] = 'TEST'
 
-module Innate
-  # skip starting adapter
-  options.started = true
-  options.mode = :spec
-end
+Innate.middleware(:spec) { run Innate.core }
+
+Innate.options.started = true
+Innate.options.mode    = :spec
 
 shared :rack_test do
   Innate.setup_dependencies

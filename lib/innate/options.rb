@@ -6,7 +6,7 @@ module Innate
       :started, false
 
     o "Will send ::setup to each element during Innate::start",
-      :setup, [Innate::Cache, Innate::Node]
+      :setup, [Innate, Innate::Cache, Innate::Node]
 
     o "Trap this signal to issue shutdown, nil/false to disable trap",
       :trap, 'SIGINT'
@@ -29,6 +29,6 @@ module Innate
     o "Prefix used to create relative links",
       :prefix, '/'
 
-    trigger(:mode){|value| Innate.middleware_recompile(value) }
+    trigger(:mode){|value| Innate.recompile_middleware(value) }
   end
 end
