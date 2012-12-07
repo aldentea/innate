@@ -37,6 +37,7 @@ lib/innate/cache/marshal.rb
 lib/innate/cache/memory.rb
 lib/innate/cache/yaml.rb
 lib/innate/current.rb
+lib/innate/default_middleware.rb
 lib/innate/dynamap.rb
 lib/innate/helper.rb
 lib/innate/helper/aspect.rb
@@ -48,13 +49,12 @@ lib/innate/helper/render.rb
 lib/innate/log.rb
 lib/innate/log/color_formatter.rb
 lib/innate/log/hub.rb
-lib/innate/middleware_compiler.rb
+lib/innate/lru_hash.rb
 lib/innate/mock.rb
 lib/innate/node.rb
 lib/innate/options.rb
 lib/innate/options/dsl.rb
 lib/innate/options/stub.rb
-lib/innate/rack_file_wrapper.rb
 lib/innate/request.rb
 lib/innate/response.rb
 lib/innate/route.rb
