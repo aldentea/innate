@@ -195,7 +195,7 @@ module Innate
       mode = mode.to_sym
 
       if MIDDLEWARE[mode] and options[:mode] == mode
-        Innate.app = Rack::Builder.new(&MIDDLEWARE[mode])
+        Innate.app = Rack::Builder.new(&MIDDLEWARE[mode]).to_app
       end
     end
 
