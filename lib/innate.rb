@@ -194,7 +194,7 @@ module Innate
     def recompile_middleware(mode = options[:mode])
       mode = mode.to_sym
 
-      if MIDDLEWARE[mode]
+      if MIDDLEWARE[mode] and options[:mode] == mode
         Innate.app = Rack::Builder.new(&MIDDLEWARE[mode])
       end
     end
@@ -238,7 +238,7 @@ module Innate
     def middleware(mode, &block)
       MIDDLEWARE[mode.to_sym] = block
 
-      recompile_middleware
+      recompile_middleware(mode)
     end
 
     # @example Innate can be started by:
