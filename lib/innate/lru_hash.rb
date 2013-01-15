@@ -15,8 +15,7 @@ module Innate
   # Copyright (c) 2009  Michael Fellinger  <manveru@rubyists.com>
   #
   # You may redistribute it and/or modify it under the same terms as Ruby.
-  class LRUHash < Struct.new(:max_count, :expiration,
-                              :hook, :objs, :list, :hits, :misses)
+  class LRUHash < Struct.new(:max_count, :expiration, :hook, :objs, :list)
     CacheObject = Struct.new(:content, :size, :atime)
 
     # On 1.8 we raise IndexError, on 1.9 we raise KeyError
@@ -25,17 +24,11 @@ module Innate
     include Enumerable
 
     def initialize(options = {}, &hook)
-      self.max_count  = options[:max_count]
+      self.max_count = options[:max_count]
       self.expiration = options[:expiration]
-
-      avoid_insane_options
-
       self.hook = hook
-
       self.objs = {}
       self.list = []
-
-      self.hits = self.misses = 0
     end
 
     def delete(key)
@@ -70,10 +63,7 @@ module Innate
     def [](key)
       expire
 
-      unless objs.key?(key)
-        self.misses += 1
-        return
-      end
+      return unless objs.key?(key)
 
       obj = objs[key]
       obj.atime = Time.now.to_i
@@ -81,7 +71,6 @@ module Innate
       list.delete_if{|list_key| key == list_key }
       list << key
 
-      self.hits += 1
       obj.content
     end
 
@@ -96,18 +85,6 @@ module Innate
       list << key
 
       obj
-    end
-
-    private
-
-    # Sanity checks.
-    def avoid_insane_options
-      if max_count && max_count <= 0
-        raise ArgumentError, "invalid max_count `#{max_count}'"
-      end
-      if expiration && expiration <= 0
-        raise ArgumentError, "invalid expiration `#{expiration}'"
-      end
     end
   end
 end
