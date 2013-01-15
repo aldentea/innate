@@ -50,7 +50,7 @@ module Innate
     trait :fast_mappings  => false
 
     # @see wrap_action_call
-    trait :action_cache   => LRUHash.new
+    trait :action_cache   => LRUHash.new(:max_count => 500)
     trait :wrap           => SortedSet.new
     trait :provide_set    => false
     trait :needs_method   => false
