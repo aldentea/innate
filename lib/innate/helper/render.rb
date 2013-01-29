@@ -31,8 +31,9 @@ module Innate
       # @see Mock.session
       # @author manveru
       def render_full(path, query = {})
-        uri = URI(path.to_s)
+        uri       = URI(path.to_s)
         uri.query = Rack::Utils.build_query(query)
+        saved     = request, response, session, actions
 
         if cookie = request.env['HTTP_COOKIE']
           Mock.session do |mock|
@@ -42,6 +43,8 @@ module Innate
         else
           Mock.get(uri.to_s).body
         end
+      ensure
+        self.request, self.response, self.session, self.actions = saved
       end
 
       # Renders an action without any layout.
@@ -76,7 +79,7 @@ module Innate
       end
 
       # Renders an action view and does not execute any methods.
-      # The rendered view will not be wrapped in a layout and instead 
+      # The rendered view will not be wrapped in a layout and instead
       # will use the layout of the current action.
       # You can further tweak the action to be rendered by passing a block.
       #
