@@ -49,8 +49,14 @@ module Innate
     trait :provide        => {}
     trait :fast_mappings  => false
 
+    # Caching related traits.
+    trait :cache_provides => false
+    trait :provides_cache => LRUHash.new(:max_count => 100)
+
+    trait :cache_method_arities => false
+    trait :method_arity_cache   => LRUHash.new(:max_count => 100)
+
     # @see wrap_action_call
-    trait :action_cache   => LRUHash.new(:max_count => 500)
     trait :wrap           => SortedSet.new
     trait :provide_set    => false
     trait :needs_method   => false
@@ -235,8 +241,26 @@ module Innate
       trait("#{format}_content_type" => content_type) if content_type
     end
 
+    ##
+    # Returns the list of provide handlers. This list is cached after the first
+    # call to this method.
+    #
+    # @return [Hash]
+    #
     def provides
-      ancestral_trait.reject{|key, value| key !~ /_handler$/ }
+      if ancestral_trait[:cache_provides]
+        return ancestral_trait[:provides_cache][self] ||= provide_handlers
+      else
+        return provide_handlers
+      end
+    end
+
+    ##
+    # @see Innate::Node#provides
+    # @return [Hash]
+    #
+    def provide_handlers
+      ancestral_trait.reject { |key, value| key !~ /_handler$/ }
     end
 
     # This makes the Node a valid application for Rack.
@@ -541,6 +565,11 @@ module Innate
     # @see Node#resolve
     # @return [Hash] mapping the name of the methods to their arity
     def update_method_arities
+      if ancestral_trait[:cache_method_arities] \
+      and ancestral_trait[:method_arity_cache][self]
+        return ancestral_trait[:method_arity_cache][self]
+      end
+
       @method_arities = {}
 
       exposed = ancestors & Helper::EXPOSE.to_a
@@ -550,6 +579,10 @@ module Innate
         ancestor.public_instance_methods(false).each do |im|
           @method_arities[im.to_s] = ancestor.instance_method(im).arity
         end
+      end
+
+      if ancestral_trait[:cache_method_arities]
+        ancestral_trait[:method_arity_cache][self] = @method_arities
       end
 
       @method_arities

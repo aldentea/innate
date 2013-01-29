@@ -48,7 +48,11 @@ module Innate
       # Consider objects that have Aspect included
       def self.ancestral_aop(from)
         aop = {}
-        from.ancestors.reverse.map { |anc| aop.merge!(AOP[anc]) if anc < Aspect }
+
+        from.ancestors.reverse.each do |anc|
+          aop.merge!(AOP[anc]) if anc < Aspect
+        end
+
         aop
       end
 
