@@ -285,7 +285,7 @@ module Innate
     # @see Node#resolve Node#action_found Node#action_missing
     # @author manveru
     def try_resolve(path)
-      action = ancestral_trait[:action_cache][[self, path]] ||= resolve(path)
+      action = resolve(path)
       action ? action_found(action) : action_missing(path)
     end
 
@@ -372,8 +372,18 @@ module Innate
     def resolve(path, options = {})
       name, wish, engine = find_provide(path)
       node = (respond_to?(:ancestors) && respond_to?(:new)) ? self : self.class
-      action = Action.create(:node => node, :wish => wish, :engine => engine, :path => path, :options => options)
-      action.options.key?(:needs_method) || action.options[:needs_method] = node.needs_method?
+
+      action = Action.create(
+        :node    => node,
+        :wish    => wish,
+        :engine  => engine,
+        :path    => path,
+        :options => options
+      )
+
+      if !action.options.key?(:needs_method)
+        action.options[:needs_method] = node.needs_method?
+      end
 
       if content_type = node.ancestral_trait["#{wish}_content_type"]
         action.options[:content_type] = content_type

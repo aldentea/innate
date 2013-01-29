@@ -37,6 +37,25 @@ class AspectDerivedWithLayout < AspectAllSpec
   end
 end
 
+class AspectBeforeAllCache
+  Innate.node('/cached', self)
+  layout :layout
+
+  def self.numbers
+    @numbers ||= []
+  end
+
+  before_all do
+    self.class.numbers << 10
+  end
+
+  def index; end
+
+  def layout
+    return '#{@content}'
+  end
+end
+
 class AspecNoMethodSpec
   Innate.node('/without_method', self)
   include Innate::Node
@@ -95,5 +114,12 @@ describe Innate::Helper::Aspect do
     get('/derived/before_second').body.should == 'Content: 84'
     $aspect_spec_before_all.should == 84
     $aspect_spec_after_all.should == 80
+  end
+
+  it 'should not cache aspect blocks' do
+    get('/cached')
+    get('/cached')
+
+    AspectBeforeAllCache.numbers.should == [10, 10]
   end
 end
