@@ -110,6 +110,10 @@ describe Innate::Helper::Link do
       One.anchor('<blink> & <a>', :foo).
         should == '<a href="/foo">&lt;blink&gt; &amp; &lt;a&gt;</a>'
     end
+
+    should 'not append a ? when there is no query string' do
+      One.anchor('http://google.com').include?('?').should == false
+    end
   end
 
   describe 'combining #anchor and #route' do

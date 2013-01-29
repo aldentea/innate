@@ -80,9 +80,9 @@ module Innate
         when URI
           href = first.to_s
         when /^\w+:\/\//
-          uri = URI(first)
-          uri.query = Rack::Utils.escape_html(uri.query)
-          href = uri.to_s
+          uri       = URI(first)
+          uri.query = Rack::Utils.escape_html(uri.query) if uri.query
+          href      = uri.to_s
         else
           href = args.empty? ? r(text) : r(*args)
         end
