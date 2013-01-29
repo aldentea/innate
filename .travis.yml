@@ -6,10 +6,11 @@ rvm:
   - 1.8.7
   - 1.9.2
   - 1.9.3
-  - ruby-head
+  - jruby-18mode
+  - jruby-19mode
   - rbx-18mode
-  - ree
-  - jruby
+  - rbx-19mode
+  - ruby-head
 notifications:
   email:
     - mf@rubyists.com
