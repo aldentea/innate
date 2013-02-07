@@ -1,3 +1,97 @@
+[64ca67a | 2013-01-29 23:34:26 UTC] Michael Fellinger <m.fellinger@gmail.com>
+
+  * don't do CI for REE, it's not supported anymore, add rbx and jruby 1.9
+
+[079975c | 2013-01-29 21:57:39 UTC] Yorick Peterse <yorickpeterse@gmail.com>
+
+  * Preserve values when calling render_full.
+
+    Signed-off-by: Yorick Peterse <yorickpeterse@gmail.com>
+
+[a90d3f9 | 2013-01-29 21:53:16 UTC] Yorick Peterse <yorickpeterse@gmail.com>
+
+  * Fix for generting URLs using anchor().
+
+    Instead of always appending "?" to the URL the anchor() method should only do
+    so when there actually is a query string.
+    
+    Signed-off-by: Yorick Peterse <yorickpeterse@gmail.com>
+
+[d2aeb7f | 2013-01-29 21:17:08 UTC] Yorick Peterse <yorickpeterse@gmail.com>
+
+  * Caching of provides and method arities.
+
+    Caching of a controller's provide handlers as well as the method arities can
+    lead to a nice performance boost of around 300 transactions/second using the
+    following benchmark:
+    
+        require 'innate'
+    
+        Innate.middleware :live do
+          run Innate.core
+        end
+    
+        Innate::Log.level   = Logger::ERROR
+        Innate.options.mode = :live
+        ENV['RACK_ENV']     = 'none'
+    
+        class MainController
+          Innate.node('/', self)
+    
+          def index
+            return 'index'
+          end
+        end
+    
+        [:fast_mappings, :cache_provides, :cache_method_arities].each do |key|
+          MainController.ancestral_trait[key] = true
+        end
+    
+        Innate.start(:adapter => :thin)
+    
+    Benchmarking this was done by running `siege -c 10 -t 5s -b HOST` and would
+    initially result in around 1700 trans/sec. When using this commit this sits
+    between 2000/2100 trans/sec.
+    
+    To prevent any potential issues the caching of provides and method aritites is
+    disabled by default.
+    
+    See Github issue #7 for more information.
+    
+    Signed-off-by: Yorick Peterse <yorickpeterse@gmail.com>
+
+[06dd4c5 | 2013-01-29 18:25:49 UTC] Yorick Peterse <yorickpeterse@gmail.com>
+
+  * Revert action caching.
+
+    Instead of caching the entire action instance (which is modified further down
+    the chain) various parts that make up this process will be cached instead
+    (where possible).
+    
+    Signed-off-by: Yorick Peterse <yorickpeterse@gmail.com>
+
+[32440b0 | 2013-01-15 18:38:41 UTC] Michael Fellinger <m.fellinger@gmail.com>
+
+  * prevent memory leak from action caching
+
+[040d084 | 2013-01-15 18:37:19 UTC] Michael Fellinger <m.fellinger@gmail.com>
+
+  * clean up LRUHash a bit
+
+[a136a72 | 2013-01-14 20:06:22 UTC] Michael Fellinger <m.fellinger@gmail.com>
+
+  * build middleware only once
+
+[8aea7cb | 2013-01-14 18:31:37 UTC] Yorick Peterse <yorickpeterse@gmail.com>
+
+  * Only compile middleware for the current mode.
+
+    Signed-off-by: Yorick Peterse <yorickpeterse@gmail.com>
+
+[1da947d | 2012-12-07 21:25:01 UTC] Michael Fellinger <m.fellinger@gmail.com>
+
+  * Version 2012.12
+
 [71dc65d | 2012-12-07 20:24:57 UTC] Yorick Peterse <yorickpeterse@gmail.com>
 
   * Fixed YARD formatting errors.
