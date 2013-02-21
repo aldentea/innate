@@ -1,3 +1,11 @@
+[aa22191 | 2013-02-21 12:21:16 UTC] Michael Fellinger <m.fellinger@gmail.com>
+
+  * update dependencies
+
+[1a2ee39 | 2013-02-07 00:10:01 UTC] Michael Fellinger <m.fellinger@gmail.com>
+
+  * Version 2013.02
+
 [64ca67a | 2013-01-29 23:34:26 UTC] Michael Fellinger <m.fellinger@gmail.com>
 
   * don't do CI for REE, it's not supported anymore, add rbx and jruby 1.9
