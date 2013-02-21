@@ -9,12 +9,12 @@ PROJECT_README = 'README.md'
 PROJECT_VERSION = (ENV['VERSION'] || Date.today.strftime('%Y.%m.%d')).dup
 
 DEPENDENCIES = {
-  'rack' => {:version => '~> 1.4.1'},
+  'rack' => {:version => '~> 1.5.2'},
 }
 
 DEVELOPMENT_DEPENDENCIES = {
-  'bacon'     => {:version => '>= 1.1.0'},
-  'rack-test' => {:version => '>= 0.6.1', :lib => 'rack/test'}
+  'bacon'     => {:version => '~> 1.2.0'},
+  'rack-test' => {:version => '~> 0.6.2', :lib => 'rack/test'}
 }
 
 GEMSPEC = Gem::Specification.new{|s|
