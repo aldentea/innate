@@ -135,7 +135,8 @@ module Innate
       addr = IPAddr.new(address)
       LOCAL.find{|range| range.include?(addr) }
     rescue ArgumentError => ex
-      raise ArgumentError, ex unless ex.message == 'invalid address'
+      #raise ArgumentError, ex unless ex.message == 'invalid address'
+      raise ArgumentError, ex unless ex.message.start_with?('invalid address')  # Error message is changed??
     end
   end
 end
