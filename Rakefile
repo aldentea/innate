@@ -27,9 +27,9 @@ GEMSPEC = Gem::Specification.new{|s|
   s.platform     = Gem::Platform::RUBY
   s.version      = PROJECT_VERSION
   s.files        = `git ls-files`.split("\n").sort
-  s.has_rdoc     = true
+  #s.has_rdoc     = true
   s.require_path = 'lib'
-  s.rubyforge_project = "innate"
+  #s.rubyforge_project = "innate"
   s.required_rubygems_version = '>= 1.3.1'
 }
 

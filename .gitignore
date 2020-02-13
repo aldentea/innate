@@ -5,3 +5,4 @@ ydoc
 *.swp
 coverage
 *.gem
+vendor/bundle

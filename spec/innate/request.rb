@@ -31,16 +31,16 @@ describe Innate::Request do
   }
 
   should 'provide #request_uri' do
-    request('REQUEST_URI' => '/?a=b').request_uri.should == '/?a=b'
-    request('REQUEST_URI' => '/').request_uri.should == '/'
+    request('REQUEST_URI' => '/?a=b').request_uri.should.equal '/?a=b'
+    request('REQUEST_URI' => '/').request_uri.should.equal '/'
   end
 
   should 'provide #local_net?' do
-    request.local_net?('192.168.0.1').to_s.should == '192.168.0.0'
-    request.local_net?('252.168.0.1').should == nil
-    request.local_net?('unknown').should == nil
-    request('REMOTE_ADDR' => '211.3.129.47, 66.249.85.131').local_net?.should == nil
-    request('REMOTE_ADDR' => '211.3.129.47').local_net?.should == nil
+    request.local_net?('192.168.0.1').to_s.should.equal '192.168.0.0'
+    request.local_net?('252.168.0.1').should.equal nil
+    request.local_net?('unknown').should.equal nil
+    request('REMOTE_ADDR' => '211.3.129.47, 66.249.85.131').local_net?.should.equal nil
+    request('REMOTE_ADDR' => '211.3.129.47').local_net?.should.equal nil
   end
 
   should 'provide #subset' do
@@ -53,30 +53,30 @@ describe Innate::Request do
       'rack.input' => params
     )
 
-    req.params.should == query
-    req.subset(:a).should == {'a' => 'b'}
-    req.subset(:a, :c).should == {'a' => 'b', 'c' => 'd'}
+    req.params.should.equal query
+    req.subset(:a).should.equal({'a' => 'b'})
+    req.subset(:a, :c).should.equal({'a' => 'b', 'c' => 'd'})
   end
 
   should 'provide #domain on http' do
     request('rack.url_scheme' => 'http').domain.
-      should == URI('http://localhost:7000/')
+      should.equal URI('http://localhost:7000/')
 
     request('rack.url_scheme' => 'http').domain('/foo').
-      should == URI('http://localhost:7000/foo')
+      should.equal URI('http://localhost:7000/foo')
 
     request('rack.url_scheme' => 'http').domain('/foo', :keep_query => true).
-      should == URI('http://localhost:7000/foo?a=b')
+      should.equal URI('http://localhost:7000/foo?a=b')
   end
 
   should 'provide #domain on https' do
     request('rack.url_scheme' => 'https').domain.
-      should == URI('https://localhost:7000/')
+      should.equal URI('https://localhost:7000/')
 
     request('rack.url_scheme' => 'https').domain('/foo').
-      should == URI('https://localhost:7000/foo')
+      should.equal URI('https://localhost:7000/foo')
 
     request('rack.url_scheme' => 'https').domain('/foo', :keep_query => true).
-      should == URI('https://localhost:7000/foo?a=b')
+      should.equal URI('https://localhost:7000/foo?a=b')
   end
 end

@@ -6,11 +6,11 @@ describe 'examples/provide' do
 
   it 'provides YAML representation' do
     get '/list.yaml'
-    last_response.body.should == ARTICLES.to_yaml
-    last_response['Content-Type'].should == 'text/yaml'
+    last_response.body.should.equal ARTICLES.to_yaml
+    last_response['Content-Type'].should.equal 'text/yaml'
 
     get '/list'
-    last_response.body.should == ''
-    last_response['Content-Type'].should == 'text/html'
+    last_response.body.should.equal ''
+    last_response['Content-Type'].should.equal 'text/html'
   end
 end

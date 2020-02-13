@@ -16,7 +16,8 @@ describe 'Retro-games app' do
 
   it 'allows you to add another game' do
     response = post('/create', :name => 'Street Fighter II')
-    response.status.should == 302
+    #response.status.should == 302
+    response.status.should.equal 302
 
     follow_redirect!
     last_response.should =~ /0 =&gt; Street Fighter II/

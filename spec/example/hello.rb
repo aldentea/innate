@@ -6,8 +6,8 @@ describe 'example/hello' do
 
   should 'have index action' do
     got = get('/')
-    got.status.should == 200
-    got['Content-Type'].should == 'text/html'
-    got.body.should == 'Hello, World!'
+    got.status.should.equal 200
+    got['Content-Type'].should.equal 'text/html'
+    got.body.should.equal 'Hello, World!'
   end
 end
