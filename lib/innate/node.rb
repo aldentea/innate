@@ -1096,7 +1096,7 @@ module Innate
     # @see SingletonMethods::node
     # @author manveru
     def node_from_backtrace(backtrace)
-      filename, lineno = backtrace[0].split(':', 2)
+      filename, lineno = backtrace[0].split(/:(?=[^\/])/, 2)
       regexp = /^\s*class\s+(\S+)/
       File.readlines(filename)[0..lineno.to_i].reverse.find{|ln| ln =~ regexp }
       const_get($1)
