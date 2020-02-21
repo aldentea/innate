@@ -5,6 +5,7 @@ ydoc
 *.swp
 coverage
 *.gem
+
 vendor/bundle
 .bundle
 Gemfile.lock
