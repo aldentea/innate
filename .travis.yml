@@ -2,7 +2,11 @@ language: ruby
 cache: bundler
 
 before_install:
-  - if ["$TRAVIS_RUBY_VERSION" = "2.2.10"] -o ["$TRAVIS_RUBY_VERSION" = "1.9.3"] -o ["$TRAVIS_RUBY_VERSION" = "1.8.7"] ; then
+  - if ["$TRAVIS_RUBY_VERSION" = "2.2.10"]; then
+      gem install bundler -v '< 2.0'
+    elif ["$TRAVIS_RUBY_VERSION" = "1.9.3"]; then
+      gem install bundler -v '< 2.0'
+    elif ["$TRAVIS_RUBY_VERSION" = "1.8.7"]; then
       gem install bundler -v '< 2.0'
     else
       gem install bundler
